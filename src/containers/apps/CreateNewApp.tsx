@@ -45,7 +45,7 @@ class CreateNewApp extends Component<
             }
           >
             <Row>
-              {self.props.isMobile ? 
+              {self.props.isMobile ?
                 <Fragment>
                     <Input placeholder="my-amazing-app" onChange={e => self.setState({ appName: e.target.value })} />
                     <Button style={{marginTop: 8}} block onClick={() => self.onCreateNewAppClicked()} type="primary">Create New App</Button>

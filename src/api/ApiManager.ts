@@ -478,4 +478,11 @@ export default class ApiManager {
         })
       );
   }
+
+    getAllHosts() {
+        const http = this.http;
+
+        return Promise.resolve() //
+            .then(http.fetch(http.GET, "/user/hosts", {}));
+    }
 }

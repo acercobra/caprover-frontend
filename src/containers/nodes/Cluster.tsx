@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Row, Col, Card } from "antd";
 import DockerRegistries from "./DockerRegistries";
 import Nodes from "./Nodes";
+import Hosts from "./Hosts";
 
 export default class Cluster extends Component {
   render() {
@@ -11,6 +12,14 @@ export default class Cluster extends Component {
           <Col lg={{ span: 20 }} xs={{ span: 23}}>
             <Card title="Docker Registry Configuration">
               <DockerRegistries />
+            </Card>
+          </Col>
+        </Row>
+        <div style={{ height: 35 }} />
+        <Row type="flex" justify="center">
+          <Col lg={{ span: 20 }} xs={{ span: 23}}>
+            <Card title="Host Configuration">
+                <Hosts />
             </Card>
           </Col>
         </Row>
