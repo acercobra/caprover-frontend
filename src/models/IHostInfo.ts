@@ -11,6 +11,8 @@ type IHostType = "DIGITAL_OCEAN_HOST";
 
 export interface IHostInfo {
   id: string;
+  name: string;
+  token: string;
   hostAuthClientId: string;
   hostAuthRedirectUri: string;
   hostAuthType: string;

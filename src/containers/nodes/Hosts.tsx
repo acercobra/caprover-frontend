@@ -11,6 +11,11 @@ import {
   IHostInfo,
   IHostTypes
 } from "../../models/IHostInfo";
+import HostAdd from "./HostAdd";
+import DefaultDockerRegistry from "./DefaultDockerRegistry";
+import DockerRegistryTable from "./DockerRegistryTable";
+import {IRegistryInfo, IRegistryTypes} from "../../models/IRegistryInfo";
+import HostTable from "./HostTable";
 
 class CurrentHosts extends ApiComponent<
   {
@@ -45,18 +50,13 @@ class CurrentHosts extends ApiComponent<
       });
   }
 
-  addNode(nodeToAdd: INodeToAdd) {
+  addHost(hostToAdd: IHostInfo) {
     const self = this;
     self.setState({ apiData: undefined, isLoading: true });
     self.apiManager
-      .addDockerNode(
-        nodeToAdd.nodeType,
-        nodeToAdd.privateKey,
-        nodeToAdd.remoteNodeIpAddress,
-        nodeToAdd.captainIpAddress
-      )
+      .addHost(hostToAdd)
       .then(function() {
-        message.success("Node added successfully!");
+        message.success("Host added successfully!");
       })
       .catch(Toaster.createCatcher())
       .then(function() {
@@ -64,88 +64,50 @@ class CurrentHosts extends ApiComponent<
       });
   }
 
-  componentDidMount() {
-    this.fetchData();
+  updateHost(host: IHostInfo) {
+    const self = this;
+    self.setState({ apiData: undefined, isLoading: true });
+    self.apiManager
+        .updateHost(host)
+        .then(function() {
+          message.success("Host updated successfully!");
+        })
+        .catch(Toaster.createCatcher())
+        .then(function() {
+          self.fetchData();
+        });
   }
 
-  createNodes() {
-    const nodes: any[] = this.state.apiData.hosts || [];
+  createHostNode(host: IHostInfo) {
+    const self = this;
+    self.setState({ apiData: undefined, isLoading: true });
+    self.apiManager
+      .createHostNode(host)
+      .then(function() {
+        message.success("Host Node created successfully!");
+      })
+      .catch(Toaster.createCatcher())
+      .then(function() {
+        self.fetchData();
+      });
+  }
 
-    return nodes.map(node => {
-      return (
-        <div
-          key={node.nodeId}
-          style={{
-            paddingTop: 15,
-            paddingBottom: 20,
-            paddingRight: 20,
-            paddingLeft: 20,
-            marginBottom: 40,
-            borderRadius: 5,
-            border: "1px solid #dddddd",
-            backgroundColor: "#fcfcfc"
-          }}
-        >
-          <Row type="flex" justify="center">
-            <b>Node ID:&nbsp;&nbsp;</b> {node.nodeId}
-          </Row>
-          <hr />
-          <div style={{ height: 10 }} />
-          <Row>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>Type: </b>
-              {node.isLeader ? "Leader (Main Node)" : node.type}
-            </Col>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>IP: </b>
-              {node.ip}
-            </Col>
-          </Row>
-          <Row>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>State: </b>
-              {node.state}
-            </Col>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>Status: </b>
-              {node.status}
-            </Col>
-          </Row>
-          <br />
-          <Row>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>RAM: </b>
-              {(node.memoryBytes / 1073741824).toFixed(2)} GB
-            </Col>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>OS: </b>
-              {node.operatingSystem}
-            </Col>
-          </Row>
-          <Row>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>CPU: </b>
-              {(node.nanoCpu / 1000000000).toFixed(0)} cores
-            </Col>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>Architecture: </b>
-              {node.architecture}
-            </Col>
-          </Row>
-          <br />
-          <Row>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>Hostname: </b>
-              {node.hostname}
-            </Col>
-            <Col lg={{ span: 12 }} xs={{ span: 24 }}>
-              <b>Docker Version: </b>
-              {node.dockerEngineVersion}
-            </Col>
-          </Row>
-        </div>
-      );
-    });
+  deleteHost(hostId: string) {
+    const self = this;
+    this.setState({ apiData: undefined, isLoading: true });
+    self.apiManager
+        .deleteHost(hostId)
+        .then(function() {
+          message.success("Host deleted successfully!");
+        })
+        .catch(Toaster.createCatcher())
+        .then(function() {
+          self.fetchData();
+        });
+  }
+
+  componentDidMount() {
+    this.fetchData();
   }
 
   render() {
@@ -163,7 +125,7 @@ class CurrentHosts extends ApiComponent<
         <div
             style={{ textAlign: "center" }}
             className={
-              this.state.apiData.registries.length === 0 ? "" : "hide-on-demand"
+              this.state.apiData.hosts.length === 0 ? "" : "hide-on-demand"
             }
         >
           <Alert
@@ -171,6 +133,31 @@ class CurrentHosts extends ApiComponent<
               message="No hosts is added yet. Go ahead and add your first host!"
           />
         </div>
+        <div
+            className={
+              this.state.apiData.hosts.length > 0 ? "" : "hide-on-demand"
+            }
+        >
+          <HostTable
+              apiData={self.state.apiData!}
+              isMobile={this.props.isMobile}
+              deleteHost={id => {
+                self.deleteHost(id);
+              }}
+              updateHost={host => {
+                self.updateHost(host);
+              }}
+              createHostNode={host => {
+                self.createHostNode(host);
+              }}
+          />
+        </div>
+        <div style={{ height: 50 }} />
+        <HostAdd
+            apiData={self.state.apiData!}
+            addHost={host => self.addHost(host)}
+            isMobile={this.props.isMobile}
+         />
       </div>
     );
   }

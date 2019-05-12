@@ -6,6 +6,7 @@ import { IRegistryInfo } from "../models/IRegistryInfo";
 import Utils from "../utils/Utils";
 import { ICaptainDefinition } from "../models/ICaptainDefinition";
 import { IVersionInfo } from "../models/IVersionInfo";
+import {IHostInfo} from "../models/IHostInfo";
 
 const BASE_DOMAIN = process.env.REACT_APP_API_URL
   ? process.env.REACT_APP_API_URL
@@ -479,10 +480,38 @@ export default class ApiManager {
       );
   }
 
-    getAllHosts() {
-        const http = this.http;
+  getAllHosts() {
+   const http = this.http;
 
-        return Promise.resolve() //
-            .then(http.fetch(http.GET, "/user/hosts", {}));
-    }
+   return Promise.resolve()
+       .then(http.fetch(http.GET, "/user/hosts", {}));
+  }
+
+  addHost(host: IHostInfo) {
+   const http = this.http;
+
+   return Promise.resolve()
+      .then(http.fetch(http.POST, "/user/hosts/insert", { ...host }));
+  }
+
+  updateHost(host: IHostInfo) {
+      const http = this.http;
+
+      return Promise.resolve()
+          .then(http.fetch(http.POST, "/user/hosts/update", { ...host }));
+  }
+
+  createHostNode(host: IHostInfo) {
+    const http = this.http;
+
+    return Promise.resolve()
+      .then(http.fetch(http.POST, "/user/hosts/update", { ...host }));
+  }
+
+  deleteHost(hostId: string) {
+      const http = this.http;
+
+      return Promise.resolve()
+          .then(http.fetch(http.POST, "/user/hosts/delete", { hostId }));
+  }
 }
